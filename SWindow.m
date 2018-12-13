@@ -13,10 +13,10 @@ AmpScale = 1;
 % Window length, specified in Freq; Length = (1/Freq)*winFact
 sFreq = 500; % Start at 500 Hz
 eFreq = 37; % End at 30 Hz
-winFact = 4; % 1.2 ~ 1.4;
+winFact = 4; % 1.2 ~ 1.4 (or 4);
 
 % Spacing between signals
-spacingInSec = 0.11; % 0.09 (secs)
+spacingInSec = 0.1; % 0.1 (secs)
 
 % Carrier Freq, 0 <= cFreq 
 cFreq = 35; % ~30 +/- 5 Hz
@@ -40,6 +40,8 @@ noise_level = 0.05;
 % We can tweak this frequency array to edit the perceived pattern ---------
 %freqArray = (linspace(sFreq,eFreq,numSigs));  % Linear spacing, 3 steps within each octave, from 20-160Hz
 freqArray = (logspace(log10(sFreq),log10(eFreq),numSigs));  % Logarithmic spacing, 3 steps within each octave, from 20-160Hz
+
+% freqArray = freqArray(randperm(numSigs)); % Randomize signal sequence
 
 % Amplitude tuning factor of the signals ----------------------------------
 ampProfile = ones(1,numSigs); % Amplitude profile for each substituent signal
@@ -82,7 +84,11 @@ for i=1:length(freqArray)
 
    temp = highpass(temp,hpFreq,Fs); % High-pass filtering
    
-   temp = temp + noise_level*randn(size(temp)); % Add white Gaussian noise?
+%    temp = temp + noise_level*randn(size(temp)); % Add white Gaussian noise?
+    temp = 0.2*randn(size(temp));
+    
+%     cn = dsp.ColoredNoise(1,length(temp),1,'Color','pink');
+%     temp = 0.5*cn()';
     
     % temp=[temp zeros(1,Fs*.015)]+[zeros(1,Fs*.015) temp];   % All pass filtering
     
@@ -112,7 +118,8 @@ for i=1:length(freqArray2)
    
    temp = highpass(temp,hpFreq,Fs); % High-pass filtering
    
-   temp = temp + noise_level*randn(size(temp)); % Add white Gaussian noise?
+%    temp = temp + noise_level*randn(size(temp)); % Add white Gaussian noise?
+   temp = 0.2*randn(size(temp));
     
     % temp=[temp zeros(1,Fs*.015)]+[zeros(1,Fs*.015) temp];   % All pass filtering
     
