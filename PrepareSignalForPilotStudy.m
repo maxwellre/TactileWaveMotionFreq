@@ -1,5 +1,5 @@
-%% Short Window
-% Created on 12/12/2018 based on 'NoLDV.m'
+%% Prepare Signal For Pilot Study
+% Created on 12/14/2018 based on 'SWindow.m'
 % -------------------------------------------------------------------------
 close all
 clearvars
@@ -35,10 +35,17 @@ ampDec = -.08; % -0.04;
 % Add some white noise?
 noise_level = 0.05;
 
-%% Generating signals
+
+% Signal 1: Localized at tip of index finger -> spreading to the whole hand.
+
+% Signal 2: spreading to the whole hand -> Localized at tip of index finger
+
+% Signal 3: Random signal sequence
+
+% Signal 4: Windowed white noise
+
 
 % We can tweak this frequency array to edit the perceived pattern ---------
-%freqArray = (linspace(sFreq,eFreq,numSigs));  % Linear spacing, 3 steps within each octave, from 20-160Hz
 freqArray = (logspace(log10(sFreq),log10(eFreq),numSigs));  % Logarithmic spacing, 3 steps within each octave, from 20-160Hz
 
 % freqArray = freqArray(randperm(numSigs)); % Randomize signal sequence
@@ -86,11 +93,6 @@ for i=1:length(freqArray)
    
 %    temp = temp + noise_level*randn(size(temp)); % Add white Gaussian noise?
 %     temp = 0.2*randn(size(temp));
-    
-%     cn = dsp.ColoredNoise(1,length(temp),1,'Color','pink');
-%     temp = 0.5*cn()';
-    
-    % temp=[temp zeros(1,Fs*.015)]+[zeros(1,Fs*.015) temp];   % All pass filtering
     
     zeroSig=zeros(1,round(interSpac(i)*Fs));
     outSig=[outSig temp zeroSig];
