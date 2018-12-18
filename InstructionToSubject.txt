@@ -1,0 +1,3 @@
+Instruction:
+1. Place your index finger (right hand) on top of the motor, as shown in the figure.
+2. Maintain a force around 2 N during the entire experiment.
