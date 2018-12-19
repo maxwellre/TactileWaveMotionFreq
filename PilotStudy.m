@@ -151,16 +151,16 @@ end
 %% Looping trials 
 
 % Randomization -----------------------------------------------------------
-% 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs
+% 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB
 trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-    4*ones(1,TrialNum),5*ones(1,TrialNum)];
+    4*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
 
 totalTrialNum = length(trialOrder);
 trialOrder = trialOrder(randperm(totalTrialNum));
 
 % GUI ---------------------------------------------------------------------
-imgChoice{1} = imread('figs/Concentrating.png'); % Choice 1
-imgChoice{2} = imread('figs/Spreading.png'); % Choice 2
+imgChoice{1} = imread('figs/Concentrating.png'); % Choice 1 (A)
+imgChoice{2} = imread('figs/Spreading.png'); % Choice 2 (B)
 choiceStr = {'Concentrating','Spreading'};
 
 fig_h = figure('Name','Experiment Running...','Position',figSize,...
@@ -238,13 +238,22 @@ for i = 1:totalTrialNum
             outQueue = wnA;
         case 4 % wnB (White noise with same length as sigB)
             outQueue = wnB;
-        case 5 % rs (Random Sequence)
+        case 5 % rsA (Random Sequence with both ends same as sigA)
             rs = [];
-            rand_ind = randperm(numSigs);
+            rand_ind = (1+randperm(numSigs-2));
             for j = rand_ind
                 rs = [rs, sigSeg{j,1}, zeroSig];
             end
-            outQueue = [pauseSig, rs, pauseSig];
+            outQueue = [pauseSig, sigSeg{1,1}, zeroSig,...
+                rs, sigSeg{end,1}, zeroSig, pauseSig];
+        case 6 % rsB (Random Sequence with both ends same as sigB)
+            rs = [];
+            rand_ind = (1+randperm(numSigs-2));
+            for j = rand_ind
+                rs = [rs, sigSeg{j,1}, zeroSig];
+            end
+            outQueue = [pauseSig, sigSeg{end,1}, zeroSig,...
+                rs, sigSeg{1,1}, zeroSig, pauseSig];
         otherwise
             error('Unidentified Trial')          
     end
