@@ -5,12 +5,12 @@ close all
 clearvars
 % -------------------------------------------------------------------------
 % Global variable
-global isStarting isChoosing currChoice outQueue sNI
+global isStarting isChoosing currChoice outQueue sNI text_h2 expData subjectID
 % -------------------------------------------------------------------------
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 20;
+TrialNum = 3;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -79,7 +79,7 @@ for i = 1:numSigs
     sigSeg{i,2} = sprintf('%.0fHz',freqArray(i));
 end
 
-% Signal A: Spreading to the whole hand -> Localized at tip of index finger
+% Signal A: Concentrating to the tip of index finger
 sigA = [];
 wnA = [];
 for i = 1:numSigs
@@ -92,7 +92,7 @@ end
 sigA = [pauseSig, sigA, pauseSig];
 wnA = [pauseSig, wnA, pauseSig];
 
-% Signal B: Localized at tip of index finger -> spreading to the whole hand.
+% Signal B: Spreading to the whole hand.
 sigB = [];
 wnB = [];
 for i = 1:numSigs
@@ -113,93 +113,117 @@ addAnalogOutputChannel(sNI,'Dev3','ao0','Voltage');
 sNI.Rate = Fs;
 
 %% Initialize the GUI -----------------------------------------------------
-% fig_h = figure('Name','Experiment Starting...','Position',figSize,...
-%     'Color','w');
-% img0 = imread('figs/HandPose-01.jpg');
-% subplot('Position',[0.05 0.05 0.4 0.9]);
-% imshow(img0);
-% fileID = fopen('InstructionToSubject.txt','r');
-% noteStr = fscanf(fileID,'%c'); fclose(fileID);
-% annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
-%     'EdgeColor','none', 'FontSize',18);
-% 
-% % Set the staring flag
-% isStarting = 1;
-% 
-% % Start button
-% uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
-%     'Position', [800 100 200 80], 'BackgroundColor',[0.8,1,0.8],...
-%     'Callback', @startExp);
-% 
-% while isStarting
-%     pause(0.5);
-% end
-% close(fig_h);
+fig_h = figure('Name','Experiment Starting...','Position',figSize,...
+    'Color','w');
+img0 = imread('figs/HandPose-01.jpg');
+subplot('Position',[0.05 0.05 0.4 0.9]);
+imshow(img0);
+fileID = fopen('InstructionToSubject.txt','r');
+noteStr = fscanf(fileID,'%c'); fclose(fileID);
+annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
+    'EdgeColor','none', 'FontSize',18);
+
+% Set the staring flag
+isStarting = 1;
+
+% Input subject info
+uicontrol('Style','text','BackgroundColor','w',...
+    'Position',[1020 140 200 30], 'FontSize',18, 'String',...
+    'Enter subject ID');
+etf = uicontrol('Style','edit', 'Position',[1020 100 200 30],...
+    'BackgroundColor',[0.98,0.98,0.98], 'FontSize',18);
+
+% Start button
+uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
+    'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
+    'Callback', {@startExp, etf});
+
+while isStarting
+    pause(0.5);
+end
+close(fig_h);
 
 %% Looping trials 
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs
-trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-    4*ones(1,TrialNum),5*ones(1,TrialNum)];
+% trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
+%     4*ones(1,TrialNum),5*ones(1,TrialNum)];
+trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum)];
+
 totalTrialNum = length(trialOrder);
 trialOrder = trialOrder(randperm(totalTrialNum));
 
 % GUI ---------------------------------------------------------------------
-imgChoice{1} = imread('figs/Spreading.png'); % Choice 1
-imgChoice{2} = imread('figs/Concentrating.png'); % Choice 2
-choiceStr = {'Spreading','Concentrating'};
+imgChoice{1} = imread('figs/Concentrating.png'); % Choice 1
+imgChoice{2} = imread('figs/Spreading.png'); % Choice 2
+choiceStr = {'Concentrating','Spreading'};
 
 fig_h = figure('Name','Experiment Running...','Position',figSize,...
     'Color','w');
 % Left subplot
 subplot('Position',[0.2 0.4 0.3 0.4]);
-pic_left = imshow(imgChoice{1});
+pic_left = imshow([]);
 
 % Left button
-bt_left = uicontrol('Style', 'togglebutton', 'String', choiceStr{1},...
+bt_left = uicontrol('Style', 'pushbutton', 'String', choiceStr{1},...
     'FontSize',20,...
     'Position', [550 120 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
-    'Callback', @chooseLeft);
+    'Callback', @chooseLeft, 'BusyAction','cancel');
 
 % Textbox for message
 text_h = uicontrol('Style','text','BackgroundColor','w',...
-    'Position',[20 700 600 30], 'String',[],'FontSize',18);
+    'Position',[20 700 400 30], 'String',[],'FontSize',18);
+text_h2 = uicontrol('Style','text','BackgroundColor','w',...
+    'Position',[20 660 400 30], 'String',[],'FontSize',18);
 
 % Right subplot
 subplot('Position',[0.5 0.4 0.3 0.4]);
-pic_right = imshow(imgChoice{2});
+pic_right = imshow([]);
 
 % Right button
-bt_right = uicontrol('Style', 'togglebutton', 'String', choiceStr{2},...
+bt_right = uicontrol('Style', 'pushbutton', 'String', choiceStr{2},...
     'FontSize',20,...
     'Position', [950 120 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
-    'Callback', @chooseRight);
+    'Callback', @chooseRight, 'BusyAction','cancel');
 
 % Play signal button
 bt_play = uicontrol('Style', 'pushbutton', 'String', 'Play',...
     'FontSize',20,...
     'Position', [770 220 160 80], 'BackgroundColor',[0.98,0.98,0.98],...
-    'Callback', @playSignal);
+    'Callback', @playSignal, 'BusyAction','cancel');
 
 % Submit button
 bt_submit = uicontrol('Style', 'pushbutton', 'String', 'Submit',...
     'FontSize',20,...
-    'Position', [770 20 160 80], 'BackgroundColor',[1,0.9,0.9],...
-    'Callback', @submitAnswer);
+    'Position', [770 20 160 80], 'BackgroundColor',[1,1,1],...
+    'Callback', @submitAnswer, 'BusyAction','cancel');
 
 % Figure close button (end the program)
 set(fig_h, 'CloseRequestFcn',{@closeReq, fig_h});
 
-varTypes = {'double','double','double','double','double','double'};
+varTypes = {'uint8','uint8','uint8','uint8','double'};
 columnNum = length(varTypes);
 varNames = {'StimulusType','LeftDisplay','RightDisplay','SubmittedAnswer',...
-    'PlayNumber','ResponseTime'};
-expData = table('Size',[TrialNum columnNum],'VariableTypes',varTypes,...
+    'ResponseTime'};
+expData = table('Size',[totalTrialNum columnNum],'VariableTypes',varTypes,...
     'VariableNames',varNames);
 
-for i = 1:totalTrialNum  
+for i = 1:totalTrialNum    
+    text_h.String = sprintf('Trial %d',i);
+    
+    choiceInd = randperm(2); % Randomize the left and right options
+    
+    expData.LeftDisplay(i) = choiceInd(1);
+    bt_left.String = choiceStr{choiceInd(1)};
+    pic_left.CData = imgChoice{choiceInd(1)};
+    
+    expData.RightDisplay(i) = choiceInd(end);
+    bt_right.String = choiceStr{choiceInd(end)};
+    pic_right.CData = imgChoice{choiceInd(end)};
+       
     outQueue = [];
+    expData.StimulusType(i) = trialOrder(i);
     switch trialOrder(i)
         case 1 % sigA (Concentrating)
             outQueue = sigA;
@@ -212,22 +236,31 @@ for i = 1:totalTrialNum
         case 5 % rs (Random Sequence)
             rs = [];
             rand_ind = randperm(numSigs);
-            for i = rand_ind
+            for j = rand_ind
                 rs = [rs, sigSeg{i,1}, zeroSig];
             end
             outQueue = [pauseSig, rs, pauseSig];
         otherwise
             error('Unidentified Trial')          
     end
-    
-    text_h.String = sprintf('Trial %d - Choose %s or %s',...
-        i,choiceStr{1},choiceStr{2});
+    text_h2.String = 'Playing the signal ...';
+    bt_play.BackgroundColor = [0.5,1,0.4];
+    queueOutputData(sNI,outQueue');
+    sNI.startForeground;    
+    while sNI.IsLogging      
+        bt_right.BackgroundColor = [1,1,1];
+        bt_left.BackgroundColor = [1,1,1];
+        bt_submit.BackgroundColor = [1,1,1];
+        pause(0.1);
+    end
+    tic
     
     currChoice = 0;
     isChoosing = 1;
     bt_submit.BackgroundColor = [1,1,1];
     while isChoosing && isvalid(fig_h)
         if sNI.IsLogging
+            text_h2.String = 'Playing the signal ...';
             bt_right.BackgroundColor = [1,1,1];
             bt_left.BackgroundColor = [1,1,1];
             bt_submit.BackgroundColor = [1,1,1];
@@ -235,14 +268,15 @@ for i = 1:totalTrialNum
             bt_play.BackgroundColor = [0.98,0.98,0.98];
             
             if currChoice == 1 % Left button pushed
-                bt_right.Value = 0;
+                text_h2.String = sprintf('Your choice: %s',choiceStr{1});
                 bt_right.BackgroundColor = [0.98,0.98,0.98];
                 bt_left.BackgroundColor = [1,0.5,0.5];
             elseif currChoice == 2 % Right button pushed
-                bt_left.Value = 0;
+                text_h2.String = sprintf('Your choice: %s',choiceStr{2});
                 bt_left.BackgroundColor = [0.98,0.98,0.98];
                 bt_right.BackgroundColor = [1,0.5,0.5];
             else
+                text_h2.String = 'Play again or make your choice';
                 bt_right.BackgroundColor = [0.98,0.98,0.98];
                 bt_left.BackgroundColor = [0.98,0.98,0.98];
                 bt_submit.BackgroundColor = [1,0.9,0.9];
@@ -254,6 +288,14 @@ for i = 1:totalTrialNum
         end
         pause(0.1);
     end  
+    expData.SubmittedAnswer(i) = choiceInd(currChoice);
+    expData.ResponseTime(i) = toc;
+    
+    if isvalid(fig_h)
+        bt_right.BackgroundColor = [0.98,0.98,0.98];
+        bt_left.BackgroundColor = [0.98,0.98,0.98];
+        bt_submit.BackgroundColor = [1,1,1];
+    end
     
     if ~isvalid(fig_h)
         break;
@@ -263,9 +305,17 @@ delete(fig_h);
 
 sNI.stop;
 
+save(sprintf('%s.mat',subjectID),'expData');
+
+figure('Name','Experiment Ended','Position',[500 200 820 500],'Color','w');
+uicontrol('Style','text','BackgroundColor','w',...
+    'Position',[10 300 800 50], 'FontSize',18,'String',...
+    'Data saved. Experiment completed. Thanks for your participation!');
+
 %% GUI Callback Functions
-function startExp(~, ~)
-    global isStarting;
+function startExp(~, ~, etf)
+    global isStarting subjectID;
+    subjectID = etf.String;
     isStarting = 0;
 end
 
@@ -290,8 +340,9 @@ function chooseRight(hObject, ~)
 end
 
 function playSignal(hObject, ~)
-    global outQueue sNI;
+    global outQueue sNI text_h2;
     if ~sNI.IsLogging
+        text_h2.String = 'Playing the signal ...';
         hObject.BackgroundColor = [0.5,1,0.4];
         queueOutputData(sNI,outQueue');
         sNI.startForeground; 
@@ -299,14 +350,22 @@ function playSignal(hObject, ~)
 end
 
 function submitAnswer(~, ~)
-    global isChoosing sNI;
-    if ~sNI.IsLogging
+    global isChoosing currChoice sNI text_h2;
+    while sNI.IsLogging
+        pause(0.1);
+    end
+    if currChoice > 0
         isChoosing = 0;
+    else
+        text_h2.String = 'Make your choice first!';
+        pause(0.8);
     end
 end
 
 % Figure Close button
-function closeReq(hObject, ~, fig_h)
+function closeReq(~, ~, fig_h)
+    global expData;
     disp('---------- Program forced shutdown ----------')
+    save('IncompleteExperiment.mat','expData');
     delete(fig_h);
 end
