@@ -10,7 +10,7 @@ global isStarting isChoosing currChoice outQueue sNI text_h2 expData subjectID
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 3;
+TrialNum = 10;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -37,7 +37,7 @@ numSigs = 10; % Number of signals
 pauseTimeInSec = 0.5; % Time between repetitions (secs)
 
 % Parameters can linearly increase or decrease with freqency index by some proportion
-ampDec = -.08; % -0.04;
+ampDec = 0.1; 
 
 % Add some white noise?
 noise_level = 0.05;
@@ -137,10 +137,16 @@ uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
     'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
     'Callback', {@startExp, etf});
 
-while isStarting
+while isStarting && isvalid(fig_h) 
     pause(0.5);
 end
-close(fig_h);
+
+if isvalid(fig_h) 
+    close(fig_h);
+else
+    disp('---------- Program forced shutdown ----------')
+    return
+end
 
 %% Looping trials 
 
@@ -222,6 +228,7 @@ for i = 1:totalTrialNum
        
     outQueue = [];
     expData.StimulusType(i) = trialOrder(i);
+
     switch trialOrder(i)
         case 1 % sigA (Concentrating)
             outQueue = sigA;
@@ -245,7 +252,7 @@ for i = 1:totalTrialNum
     bt_play.BackgroundColor = [0.5,1,0.4];
     queueOutputData(sNI,outQueue');
     sNI.startForeground;    
-    while sNI.IsLogging      
+    while sNI.IsLogging && isvalid(fig_h)      
         bt_right.BackgroundColor = [1,1,1];
         bt_left.BackgroundColor = [1,1,1];
         bt_submit.BackgroundColor = [1,1,1];
@@ -255,7 +262,9 @@ for i = 1:totalTrialNum
     
     currChoice = 0;
     isChoosing = 1;
-    bt_submit.BackgroundColor = [1,1,1];
+    if isvalid(fig_h)
+        bt_submit.BackgroundColor = [1,1,1];
+    end
     while isChoosing && isvalid(fig_h)
         if sNI.IsLogging
             text_h2.String = 'Playing the signal ...';
