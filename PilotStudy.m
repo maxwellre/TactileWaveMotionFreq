@@ -10,7 +10,7 @@ global isStarting isChoosing currChoice outQueue sNI text_h2 expData subjectID
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 10;
+TrialNum = 2;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -206,10 +206,10 @@ bt_submit = uicontrol('Style', 'pushbutton', 'String', 'Submit',...
 % Figure close button (end the program)
 set(fig_h, 'CloseRequestFcn',{@closeReq, fig_h});
 
-varTypes = {'uint8','uint8','uint8','uint8','double'};
+varTypes = {'uint8','uint8','uint8','uint8','double','cell'};
 columnNum = length(varTypes);
 varNames = {'StimulusType','LeftDisplay','RightDisplay','SubmittedAnswer',...
-    'ResponseTime'};
+    'ResponseTime','Additional'};
 expData = table('Size',[totalTrialNum columnNum],'VariableTypes',varTypes,...
     'VariableNames',varNames);
 
@@ -245,15 +245,17 @@ for i = 1:totalTrialNum
                 rs = [rs, sigSeg{j,1}, zeroSig];
             end
             outQueue = [pauseSig, sigSeg{1,1}, zeroSig,...
-                rs, sigSeg{end,1}, zeroSig, pauseSig];
+                rs, sigSeg{numSigs,1}, zeroSig, pauseSig];
+            expData.Additional(i) = {[1,rand_ind,numSigs]};
         case 6 % rsB (Random Sequence with both ends same as sigB)
             rs = [];
             rand_ind = (1+randperm(numSigs-2));
             for j = rand_ind
                 rs = [rs, sigSeg{j,1}, zeroSig];
             end
-            outQueue = [pauseSig, sigSeg{end,1}, zeroSig,...
+            outQueue = [pauseSig, sigSeg{numSigs,1}, zeroSig,...
                 rs, sigSeg{1,1}, zeroSig, pauseSig];
+            expData.Additional(i) = {[numSigs,rand_ind,1]};
         otherwise
             error('Unidentified Trial')          
     end
@@ -304,7 +306,10 @@ for i = 1:totalTrialNum
         end
         pause(0.1);
     end  
-    expData.SubmittedAnswer(i) = choiceInd(currChoice);
+    
+    if currChoice > 0
+        expData.SubmittedAnswer(i) = choiceInd(currChoice);
+    end
     expData.ResponseTime(i) = toc;
     
     if isvalid(fig_h)
