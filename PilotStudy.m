@@ -107,7 +107,6 @@ wnB = [pauseSig, wnB, pauseSig];
 
 %% initialize the NI terminal
 outQueue = [];
-
 sNI = daq.createSession('ni');
 addAnalogOutputChannel(sNI,'Dev3','ao0','Voltage');
 sNI.Rate = Fs;
@@ -147,9 +146,8 @@ close(fig_h);
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs
-% trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-%     4*ones(1,TrialNum),5*ones(1,TrialNum)];
-trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum)];
+trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
+    4*ones(1,TrialNum),5*ones(1,TrialNum)];
 
 totalTrialNum = length(trialOrder);
 trialOrder = trialOrder(randperm(totalTrialNum));
@@ -173,7 +171,7 @@ bt_left = uicontrol('Style', 'pushbutton', 'String', choiceStr{1},...
 
 % Textbox for message
 text_h = uicontrol('Style','text','BackgroundColor','w',...
-    'Position',[20 700 400 30], 'String',[],'FontSize',18);
+    'Position',[760 700 300 50], 'String',[],'FontSize',24);
 text_h2 = uicontrol('Style','text','BackgroundColor','w',...
     'Position',[20 660 400 30], 'String',[],'FontSize',18);
 
@@ -237,7 +235,7 @@ for i = 1:totalTrialNum
             rs = [];
             rand_ind = randperm(numSigs);
             for j = rand_ind
-                rs = [rs, sigSeg{i,1}, zeroSig];
+                rs = [rs, sigSeg{j,1}, zeroSig];
             end
             outQueue = [pauseSig, rs, pauseSig];
         otherwise
