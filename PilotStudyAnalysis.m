@@ -9,7 +9,7 @@
 % 6 = rsB (Random Sequence with both ends same as sigB)
 % -------------------------------------------------------------------------
 totalTrialNumber = size(expData,1);
-oneTypeTrialNumber = totalTrialNumber/5;
+oneTypeTrialNumber = totalTrialNumber/6;
 
 rate1 = sum(expData.SubmittedAnswer == expData.StimulusType)/...
     (2*oneTypeTrialNumber); % Compare answer with stimulus type 1 and 2

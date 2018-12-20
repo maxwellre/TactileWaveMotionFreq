@@ -1,4 +1,4 @@
-%% Test Frequency Based Apparent Motion Effect with Single Actuator
+%% Test Frequency Based Motion Effect with Single Actuator
 % Created on 12/14/2018 based on 'SWindow.m'
 % -------------------------------------------------------------------------
 close all
@@ -38,9 +38,6 @@ pauseTimeInSec = 0.5; % Time between repetitions (secs)
 
 % Parameters can linearly increase or decrease with freqency index by some proportion
 ampDec = 0.1; 
-
-% Add some white noise?
-noise_level = 0.05;
 
 %% Generate signals
 % We can tweak this frequency array to edit the perceived pattern ---------
