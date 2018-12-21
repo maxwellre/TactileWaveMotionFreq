@@ -82,12 +82,17 @@ wnA = [];
 for i = 1:numSigs
     temp = randn(size(sigSeg{i,1}));    
     temp = (rms(sigSeg{i,1})/rms(temp)).*temp;
+
     wnA = [wnA, temp, zeroSig];
     
     sigA = [sigA, sigSeg{i,1}, zeroSig];
 end
 sigA = [pauseSig, sigA, pauseSig];
+
 wnA = [pauseSig, wnA, pauseSig];
+wnA = highpass(wnA,hpFreq,Fs); % High-pass filtering
+wnA = 2*lowpass(wnA,1000,Fs,'Steepness',0.5); % Low-pass filtering
+
 
 % Signal B: Spreading to the whole hand.
 sigB = [];
@@ -95,12 +100,16 @@ wnB = [];
 for i = 1:numSigs
     temp = randn(size(sigSeg{numSigs-i+1,1}));    
     temp = (rms(sigSeg{numSigs-i+1,1})/rms(temp)).*temp;
+    
     wnB = [wnB, temp, zeroSig];
     
     sigB = [sigB, sigSeg{numSigs-i+1,1}, zeroSig];
 end
 sigB = [pauseSig, sigB, pauseSig];
+
 wnB = [pauseSig, wnB, pauseSig];
+wnB = highpass(wnB,hpFreq,Fs); % High-pass filtering
+wnB = 2*lowpass(wnB,1000,Fs,'Steepness',0.5); % Low-pass filtering
 
 %% initialize the NI terminal
 outQueue = [];
@@ -149,8 +158,10 @@ end
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB
-trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-    4*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
+% trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
+%     4*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
+trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),4*ones(1,TrialNum)];
+% trialOrder = [3*ones(1,TrialNum), 4*ones(1,TrialNum)];
 
 totalTrialNum = length(trialOrder);
 trialOrder = trialOrder(randperm(totalTrialNum));
@@ -235,24 +246,26 @@ for i = 1:totalTrialNum
             outQueue = wnA;
         case 4 % wnB (White noise with same length as sigB)
             outQueue = wnB;
-        case 5 % rsA (Random Sequence with both ends same as sigA)
-            rs = [];
-            rand_ind = (1+randperm(numSigs-2));
-            for j = rand_ind
-                rs = [rs, sigSeg{j,1}, zeroSig];
-            end
-            outQueue = [pauseSig, sigSeg{1,1}, zeroSig,...
-                rs, sigSeg{numSigs,1}, zeroSig, pauseSig];
-            expData.Additional(i) = {[1,rand_ind,numSigs]};
-        case 6 % rsB (Random Sequence with both ends same as sigB)
-            rs = [];
-            rand_ind = (1+randperm(numSigs-2));
-            for j = rand_ind
-                rs = [rs, sigSeg{j,1}, zeroSig];
-            end
-            outQueue = [pauseSig, sigSeg{numSigs,1}, zeroSig,...
-                rs, sigSeg{1,1}, zeroSig, pauseSig];
-            expData.Additional(i) = {[numSigs,rand_ind,1]};
+        case 5 % Random Sequence
+            
+%         case 5 % rsA (Random Sequence with both ends same as sigA)
+%             rs = [];
+%             rand_ind = (1+randperm(numSigs-2));
+%             for j = rand_ind
+%                 rs = [rs, sigSeg{j,1}, zeroSig];
+%             end
+%             outQueue = [pauseSig, sigSeg{1,1}, zeroSig,...
+%                 rs, sigSeg{numSigs,1}, zeroSig, pauseSig];
+%             expData.Additional(i) = {[1,rand_ind,numSigs]};
+%         case 6 % rsB (Random Sequence with both ends same as sigB)
+%             rs = [];
+%             rand_ind = (1+randperm(numSigs-2));
+%             for j = rand_ind
+%                 rs = [rs, sigSeg{j,1}, zeroSig];
+%             end
+%             outQueue = [pauseSig, sigSeg{numSigs,1}, zeroSig,...
+%                 rs, sigSeg{1,1}, zeroSig, pauseSig];
+%             expData.Additional(i) = {[numSigs,rand_ind,1]};
         otherwise
             error('Unidentified Trial')          
     end
