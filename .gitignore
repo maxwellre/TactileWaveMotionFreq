@@ -1,3 +1,5 @@
 *.png
 */Img_Src/*
 *.mat
+temp/
+*.asv
