@@ -10,7 +10,7 @@ global isStarting isChoosing isPlayed currChoice outQueue sNI text_h2 expData su
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 2;
+TrialNum = 10;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -359,12 +359,16 @@ delete(fig_h);
 
 sNI.stop;
 
+if (i == totalTrialNum)
 save(sprintf('%s.mat',subjectID),'expData');
 
 figure('Name','Experiment Ended','Position',[500 200 820 500],'Color','w');
 uicontrol('Style','text','BackgroundColor','w',...
     'Position',[10 300 800 50], 'FontSize',18,'String',...
     'Data saved. Experiment completed. Thanks for your participation!');
+else
+    disp('Incomplete experiment!')
+end
 
 %% GUI Callback Functions
 function startExp(~, ~, etf)
