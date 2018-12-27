@@ -176,16 +176,23 @@ isPlayed = 0;
 
 % Randomization -----------------------------------------------------------
 % % % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB
-% % % trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-% % %     4*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
-
 % % % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs (reordered sequence)
-trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-    4*ones(1,TrialNum),5*ones(1,2*TrialNum)];
-% trialOrder = [1,2];
+% trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
+%     4*ones(1,TrialNum),5*ones(1,2*TrialNum)];
+% totalTrialNum = length(trialOrder);
+% trialOrder = trialOrder(randperm(totalTrialNum));
 
+trialOrder1 = [ones(1,TrialNum),2*ones(1,TrialNum)];
+trialOrder1 = trialOrder1(randperm(length(trialOrder1)));
+
+trialOrder2 = [3*ones(1,TrialNum),4*ones(1,TrialNum)];
+trialOrder2 = trialOrder2(randperm(length(trialOrder2)));
+
+trialOrder3 = [ones(1,TrialNum),2*ones(1,TrialNum),5*ones(1,2*TrialNum)];
+trialOrder3 = trialOrder3(randperm(length(trialOrder3)));
+
+trialOrder = [trialOrder1,trialOrder2,trialOrder3];
 totalTrialNum = length(trialOrder);
-trialOrder = trialOrder(randperm(totalTrialNum));
 
 % GUI ---------------------------------------------------------------------
 imgChoice{1} = imread('figs/Concentrating.png'); % Choice 1 (A)
@@ -328,7 +335,7 @@ for i = 1:totalTrialNum
                 bt_left.BackgroundColor = [0.98,0.98,0.98];
                 bt_right.BackgroundColor = [1,0.5,0.5];
             else
-                text_h2.String = 'Play again or make your choice';
+                text_h2.String = 'Play the signal or make your choice';
                 bt_right.BackgroundColor = [0.98,0.98,0.98];
                 bt_left.BackgroundColor = [0.98,0.98,0.98];
                 bt_submit.BackgroundColor = [1,0.9,0.9];
@@ -424,6 +431,7 @@ function submitAnswer(~, ~)
     end
     if currChoice > 0
         isChoosing = 0;
+        currChoice = 0;
     else
         text_h2.String = 'Make your choice first!'; pause(0.8);
     end
