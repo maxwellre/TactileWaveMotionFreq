@@ -179,9 +179,10 @@ isPlayed = 0;
 % % % trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
 % % %     4*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
 
-% 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs (reordered sequence)
+% % % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs (reordered sequence)
 trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
     4*ones(1,TrialNum),5*ones(1,2*TrialNum)];
+% trialOrder = [1,2];
 
 totalTrialNum = length(trialOrder);
 trialOrder = trialOrder(randperm(totalTrialNum));
