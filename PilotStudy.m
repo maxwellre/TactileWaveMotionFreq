@@ -10,7 +10,7 @@ global isStarting isChoosing isPlayed currChoice outQueue sNI text_h2 expData su
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 10;
+TrialNum = 2;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -24,7 +24,7 @@ eFreq = 500; % End at 500 Hz
 winFact = 4; % 1.2 ~ 1.4 (or 4);
 
 % Spacing between signals
-spacingInSec = 0.1; % 0.1 (secs)
+spacingInSec = 0.08; % 0.1 (secs)
 
 % Carrier Freq, 0 <= cFreq 
 cFreq = 35; % ~30 +/- 5 Hz
@@ -85,7 +85,7 @@ end
 % Signal A: Concentrating to the tip of index finger
 sigA = [];
 wnA = [];
-for i = 1:numSigs
+for i = 1:numSigs  
     temp = randn(size(sigSeg{i,1}));    
     temp = (rms(sigSeg{i,1})/rms(temp)).*temp;
 
@@ -96,13 +96,14 @@ end
 sigA = [pauseSig, sigA, pauseSig];
 
 wnA = [pauseSig, wnA, pauseSig];
+
 wnA = highpass(wnA,hpFreq,Fs); % High-pass filtering
 wnA = 2*lowpass(wnA,1000,Fs,'Steepness',0.5); % Low-pass filtering
 
 % Signal B: Spreading to the whole hand.
 sigB = [];
 wnB = [];
-for i = 1:numSigs
+for i = 1:numSigs  
     temp = randn(size(sigSeg{numSigs-i+1,1}));    
     temp = (rms(sigSeg{numSigs-i+1,1})/rms(temp)).*temp;
     
@@ -113,20 +114,40 @@ end
 sigB = [pauseSig, sigB, pauseSig];
 
 wnB = [pauseSig, wnB, pauseSig];
+
 wnB = highpass(wnB,hpFreq,Fs); % High-pass filtering
 wnB = 2*lowpass(wnB,1000,Fs,'Steepness',0.5); % Low-pass filtering
 
 % Signal reordered sequence
 %rs_ind = [4, 8, 1, 7, 3, 6, 10, 2, 9, 5];
-%rs_ind = [4, 8, 1, 7, 3, 10, 6, 9, 2, 5];
-%rs_ind = [5, 8, 1, 7, 4, 10, 3, 9, 2, 6];
 rs_ind = [5, 8, 2, 9, 4, 6, 3, 10, 1, 7];
 % this balances spec in 1st, 2nd half and df considerations
-rs = [];
+rsA = [];
+rsB = [];
+wnC = [];
+wnD = [];
 for i = 1:numSigs    
-    rs = [rs, sigSeg{rs_ind(i),1}, zeroSig];
+    rsA = [rsA, sigSeg{rs_ind(i),1}, zeroSig];
+    rsB = [rsB, sigSeg{rs_ind(numSigs-i+1),1}, zeroSig];
+    
+    temp = randn(size(sigSeg{rs_ind(i),1}));    
+    temp = (rms(sigSeg{rs_ind(i),1})/rms(temp)).*temp;
+    wnC = [wnC, temp, zeroSig];
+    
+    temp = randn(size(sigSeg{rs_ind(numSigs-i+1),1}));    
+    temp = (rms(sigSeg{rs_ind(numSigs-i+1),1})/rms(temp)).*temp;
+    wnD = [wnD, temp, zeroSig];
 end
-rs = [pauseSig, rs, pauseSig];
+rsA = [pauseSig, rsA, pauseSig];
+rsB = [pauseSig, rsB, pauseSig];
+
+wnC = [pauseSig, wnC, pauseSig];
+wnC = highpass(wnC,hpFreq,Fs); % High-pass filtering
+wnC = 2*lowpass(wnC,1000,Fs,'Steepness',0.5); % Low-pass filtering
+
+wnD = [pauseSig, wnD, pauseSig];
+wnD = highpass(wnD,hpFreq,Fs); % High-pass filtering
+wnD = 2*lowpass(wnD,1000,Fs,'Steepness',0.5); % Low-pass filtering
 
 %% initialize the NI terminal
 outQueue = [];
@@ -175,23 +196,23 @@ end
 isPlayed = 0;
 
 % Randomization -----------------------------------------------------------
-% % % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB
-% % % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rs (reordered sequence)
-% trialOrder = [ones(1,TrialNum),2*ones(1,TrialNum),3*ones(1,TrialNum),...
-%     4*ones(1,TrialNum),5*ones(1,2*TrialNum)];
-% totalTrialNum = length(trialOrder);
-% trialOrder = trialOrder(randperm(totalTrialNum));
+% 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB, 7 = wnC, 8 = wnD
 
 trialOrder1 = [ones(1,TrialNum),2*ones(1,TrialNum)];
-trialOrder1 = trialOrder1(randperm(length(trialOrder1)));
+% trialOrder1 = trialOrder1(randperm(length(trialOrder1)));
 
 trialOrder2 = [3*ones(1,TrialNum),4*ones(1,TrialNum)];
-trialOrder2 = trialOrder2(randperm(length(trialOrder2)));
+% trialOrder2 = trialOrder2(randperm(length(trialOrder2)));
 
-trialOrder3 = [ones(1,TrialNum),2*ones(1,TrialNum),5*ones(1,2*TrialNum)];
-trialOrder3 = trialOrder3(randperm(length(trialOrder3)));
+trialOrder3 = [5*ones(1,TrialNum),6*ones(1,TrialNum)];
+% trialOrder3 = trialOrder3(randperm(length(trialOrder3)));
 
-trialOrder = [trialOrder1,trialOrder2,trialOrder3];
+trialOrder4 = [7*ones(1,TrialNum),8*ones(1,TrialNum)];
+% trialOrder4 = trialOrder4(randperm(length(trialOrder4)));
+
+trialOrder = [trialOrder1,trialOrder2,trialOrder3,trialOrder4];
+
+trialOrder = trialOrder(randperm(length(trialOrder)));
 totalTrialNum = length(trialOrder);
 
 % GUI ---------------------------------------------------------------------
@@ -276,9 +297,14 @@ for i = 1:totalTrialNum
             outQueue = wnA;
         case 4 % wnB (White noise with same length as sigB)
             outQueue = wnB;
-        case 5 % Reordered Sequence
-            outQueue = rs;
-            
+        case 5 % Reordered Sequence A
+            outQueue = rsA;
+        case 6 % Reordered Sequence B
+            outQueue = rsB;    
+        case 7 % wnC (White noise with same length as rsA)
+            outQueue = wnC;
+        case 8 % wnD (White noise with same length as rsB)
+            outQueue = wnD;     
 % % %         case 5 % rsA (Random Sequence with both ends same as sigA)
 % % %             rs = [];
 % % %             rand_ind = (1+randperm(numSigs-2));
@@ -350,6 +376,7 @@ for i = 1:totalTrialNum
     
     if currChoice > 0
         expData.SubmittedAnswer(i) = choiceInd(currChoice);
+        currChoice = 0;
     end
     expData.ResponseTime(i) = toc;
     
@@ -380,12 +407,14 @@ end
 
 %% GUI Callback Functions
 function startExp(~, ~, etf)
+    pause(0.01);
     global isStarting subjectID;
     subjectID = etf.String;
     isStarting = 0;
 end
 
 function chooseLeft(hObject, ~) 
+    pause(0.01);
     global currChoice sNI isPlayed text_h2;
     if ~sNI.IsLogging
         if isPlayed
@@ -400,6 +429,7 @@ function chooseLeft(hObject, ~)
 end
 
 function chooseRight(hObject, ~) 
+    pause(0.01);
     global currChoice sNI isPlayed text_h2;
     if ~sNI.IsLogging
         if isPlayed
@@ -414,6 +444,7 @@ function chooseRight(hObject, ~)
 end
 
 function playSignal(hObject, ~)
+    pause(0.01);
     global outQueue sNI text_h2 isPlayed;
     if ~sNI.IsLogging
         text_h2.String = 'Playing the signal ...';
@@ -425,13 +456,13 @@ function playSignal(hObject, ~)
 end
 
 function submitAnswer(~, ~)
+    pause(0.2);
     global isChoosing currChoice sNI text_h2;
     while sNI.IsLogging
         pause(0.1);
     end
     if currChoice > 0
         isChoosing = 0;
-        currChoice = 0;
     else
         text_h2.String = 'Make your choice first!'; pause(0.8);
     end
@@ -439,6 +470,7 @@ end
 
 % Figure Close button
 function closeReq(~, ~, fig_h)
+    pause(0.2);
     global expData;
     disp('---------- Program forced shutdown ----------')
     save('IncompleteExperiment.mat','expData');

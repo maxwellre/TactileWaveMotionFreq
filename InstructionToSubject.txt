@@ -4,7 +4,7 @@ Instruction:
 
 2. Maintain a force around 2 N during the entire experiment.
 
-3. In each trial, when click the "play" button, a stimulus will be applied to your index finger. Two answers will be presented in the form of text and corresponding figure. Please select the answer that best describes the sensation in your finger. 
+3. In each trial, when click the "play" button, a stimulus will be applied to your index finger. Two answers will be presented in the form of text and corresponding figure. Please select the answer that best describes what you feel with your finger. 
 
 Note that you are not able to click any button when the signal is playing (when the "play" button turns green). Instead, you are expected to focus on sensing the stimuli until the "play" button turns off. 
 
