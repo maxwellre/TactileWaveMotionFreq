@@ -10,7 +10,7 @@ global isStarting isChoosing isPlayed currChoice outQueue sNI text_h2 expData su
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 2;
+TrialNum = 10;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -24,7 +24,7 @@ eFreq = 500; % End at 500 Hz
 winFact = 4; % 1.2 ~ 1.4 (or 4);
 
 % Spacing between signals
-spacingInSec = 0.08; % 0.1 (secs)
+spacingInSec = 0.2; % 0.1 (secs)
 
 % Carrier Freq, 0 <= cFreq 
 cFreq = 35; % ~30 +/- 5 Hz
@@ -209,10 +209,20 @@ trialOrder3 = [5*ones(1,TrialNum),6*ones(1,TrialNum)];
 
 trialOrder4 = [7*ones(1,TrialNum),8*ones(1,TrialNum)];
 % trialOrder4 = trialOrder4(randperm(length(trialOrder4)));
-
+% 
 trialOrder = [trialOrder1,trialOrder2,trialOrder3,trialOrder4];
 
+% trialOrder1 = [ones(1,TrialNum),2*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
+% trialOrder1 = trialOrder1(randperm(length(trialOrder1)));
+% % % % % 
+% % % % % trialOrder2 = [3*ones(1,TrialNum),4*ones(1,TrialNum),7*ones(1,TrialNum),8*ones(1,TrialNum)];
+% % % % % trialOrder2 = trialOrder2(randperm(length(trialOrder2)));
+
+% trialOrder = [trialOrder1,trialOrder2];
+% trialOrder = trialOrder1;
+
 trialOrder = trialOrder(randperm(length(trialOrder)));
+
 totalTrialNum = length(trialOrder);
 
 % GUI ---------------------------------------------------------------------
