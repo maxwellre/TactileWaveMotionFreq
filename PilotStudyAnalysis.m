@@ -38,22 +38,22 @@ for i = 1:8
     temp = mod(temp-1,2)+1;
     rateA = sum(temp == 1)/length(temp);
     rateB = sum(temp == 2)/length(temp);
-    fprintf('%s identifed as Concentrating = %.1f%% and as Spreading = %.1f%%\n',...
+    fprintf('%s identified as Concentrating = %.1f%% and as Spreading = %.1f%%\n',...
         StimulusLabel{i},100*rateA,100*rateB);
 end
 
 % -------------------------------------------------------------------------
-figure('Position',[50,150,1200,600]);
-histEdges = linspace(min(expData.ResponseTime),max(expData.ResponseTime),...
-    50);
-for i = 1:8
-    subplot(4,2,i)
-    resTime = expData.ResponseTime(expData.StimulusType == i);
-    histogram(resTime,histEdges,'EdgeColor','none');
-    xlabel('Response Time (secs)')
-    title(StimulusLabel{i})
-    box off
-end
+% figure('Position',[50,150,1200,600]);
+% histEdges = linspace(min(expData.ResponseTime),max(expData.ResponseTime),...
+%     50);
+% for i = 1:8
+%     subplot(4,2,i)
+%     resTime = expData.ResponseTime(expData.StimulusType == i);
+%     histogram(resTime,histEdges,'EdgeColor','none');
+%     xlabel('Response Time (secs)')
+%     title(StimulusLabel{i})
+%     box off
+% end
 % StimulusLabel = {'Concentrating (A)','Spreading (B)','White Noise (A)',...
 %     'White Noise (B)','Random Sequence (A)','Random Sequence (B)'};
 % figure('Position',[50,150,1200,600]);

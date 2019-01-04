@@ -19,25 +19,26 @@ Fs = 20000; % 20 kS/sec sampling frequency
 % Overall Amplitude Scaling Factor
 AmpScale = 1; 
 % Window length, specified in Freq; Length = (1/Freq)*winFact
-sFreq = 37; % Start at 37 Hz
-eFreq = 500; % End at 500 Hz
-winFact = 4; % 1.2 ~ 1.4 (or 4);
+sFreq = 12.5; % Start at 37 Hz
+eFreq = 340; % End at 500 Hz
+winFact = 1; %4 1.2 ~ 1.4 (or 4);
+noiseAmp = 0.001;
 
 % Spacing between signals
-spacingInSec = 0.2; % 0.1 (secs)
+spacingInSec = 0.095; % 0.1 (secs)
 
 % Carrier Freq, 0 <= cFreq 
-cFreq = 35; % ~30 +/- 5 Hz
+cFreq = 25; % ~30 +/- 5 Hz
 
 % High-pass filter each signal
 hpFreq = 0.8*cFreq; % 0.8*carrierFrequency
-
+lpFreq = 1.5*eFreq;
 numSigs = 10; % Number of signals
 
 pauseTimeInSec = 0.5; % Time between repetitions (secs)
 
 % Parameters can linearly increase or decrease with freqency index by some proportion
-ampDec = 0.1; 
+ampDec = 0.008; 
 
 %% Generate signals
 % We can tweak this frequency array to edit the perceived pattern ---------
@@ -59,6 +60,7 @@ pauseSig = zeros(1,round(pauseTimeInSec*Fs));
 
 % -------------------------------------------------------------------------
 winLenArray = round(winFact.*(Fs./freqArray));  
+% winLenArray = [919 919 919 919 68 68 68 68 68 68];
 
 sigSeg = cell(numSigs,2); % Segment of individual signals
 sigCenterFreq = NaN(numSigs,1);
@@ -92,6 +94,7 @@ for i = 1:numSigs
     wnA = [wnA, temp, zeroSig];
     
     sigA = [sigA, sigSeg{i,1}, zeroSig];
+    sigA = noiseAmp * randn(size(sigA)) + sigA;
 end
 sigA = [pauseSig, sigA, pauseSig];
 
@@ -116,16 +119,17 @@ sigB = [pauseSig, sigB, pauseSig];
 wnB = [pauseSig, wnB, pauseSig];
 
 wnB = highpass(wnB,hpFreq,Fs); % High-pass filtering
-wnB = 2*lowpass(wnB,1000,Fs,'Steepness',0.5); % Low-pass filtering
+wnB = 2*lowpass(wnB,lpFreq,Fs,'Steepness',0.5); % Low-pass filtering
 
 % Signal reordered sequence
 %rs_ind = [4, 8, 1, 7, 3, 6, 10, 2, 9, 5];
-rs_ind = [5, 8, 2, 9, 4, 6, 3, 10, 1, 7];
+rs_ind = [5, 8, 2, 9, 4, 6, 3, 10, 1, 7, 0, 0, 0, 0, 0, 0, 0];
 % this balances spec in 1st, 2nd half and df considerations
 rsA = [];
 rsB = [];
 wnC = [];
 wnD = [];
+
 for i = 1:numSigs    
     rsA = [rsA, sigSeg{rs_ind(i),1}, zeroSig];
     rsB = [rsB, sigSeg{rs_ind(numSigs-i+1),1}, zeroSig];
@@ -143,7 +147,7 @@ rsB = [pauseSig, rsB, pauseSig];
 
 wnC = [pauseSig, wnC, pauseSig];
 wnC = highpass(wnC,hpFreq,Fs); % High-pass filtering
-wnC = 2*lowpass(wnC,1000,Fs,'Steepness',0.5); % Low-pass filtering
+wnC = 2*lowpass(wnC,lpFreq,Fs,'Steepness',0.5); % Low-pass filtering
 
 wnD = [pauseSig, wnD, pauseSig];
 wnD = highpass(wnD,hpFreq,Fs); % High-pass filtering
@@ -207,10 +211,10 @@ trialOrder2 = [3*ones(1,TrialNum),4*ones(1,TrialNum)];
 trialOrder3 = [5*ones(1,TrialNum),6*ones(1,TrialNum)];
 % trialOrder3 = trialOrder3(randperm(length(trialOrder3)));
 
-trialOrder4 = [7*ones(1,TrialNum),8*ones(1,TrialNum)];
+% trialOrder4 = [7*ones(1,TrialNum),8*ones(1,TrialNum)];
 % trialOrder4 = trialOrder4(randperm(length(trialOrder4)));
 % 
-trialOrder = [trialOrder1,trialOrder2,trialOrder3,trialOrder4];
+% trialOrder = [trialOrder1,trialOrder2,trialOrder3];
 
 % trialOrder1 = [ones(1,TrialNum),2*ones(1,TrialNum),5*ones(1,TrialNum),6*ones(1,TrialNum)];
 % trialOrder1 = trialOrder1(randperm(length(trialOrder1)));
@@ -220,9 +224,10 @@ trialOrder = [trialOrder1,trialOrder2,trialOrder3,trialOrder4];
 
 % trialOrder = [trialOrder1,trialOrder2];
 % trialOrder = trialOrder1;
+% 
+% trialOrder = trialOrder(randperm(length(trialOrder)));
 
-trialOrder = trialOrder(randperm(length(trialOrder)));
-
+trialOrder = [1,2,1,2];
 totalTrialNum = length(trialOrder);
 
 % GUI ---------------------------------------------------------------------
