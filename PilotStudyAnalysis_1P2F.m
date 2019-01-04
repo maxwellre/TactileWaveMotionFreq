@@ -1,4 +1,5 @@
-%% Pilot Study Analysis
+%% Pilot Study Analysis 
+% 1P2F (One Play Two Figures)
 % Load the data manually
 % StimulusType:
 % 1 = sigA (Concentrating)

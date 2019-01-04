@@ -1,0 +1,11 @@
+Instruction:
+
+1. Place your index finger (right hand) on top of the motor with a 45 degree angle, as shown in the figure (left).
+
+2. Maintain a force around 2 N during the entire experiment.
+
+3. During each trial, two different signals will be presented. Click the "play" button of each signal to feel it.
+
+4. After you have felt both signals, please select the signal that best matches the figure displayed in that trial.
+
+Note that you are not able to click any button when the signal is playing (when the "play" button turns green). Instead, you are expected to focus on sensing the stimuli until the "play" button turns off. 
