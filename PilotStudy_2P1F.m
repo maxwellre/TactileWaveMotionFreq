@@ -11,7 +11,7 @@ global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subj
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 2;
+TrialNum = 5;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -83,6 +83,8 @@ for i = 1:numSigs
     [sp, f] = spectr(sigSeg{i,1}, Fs, [0 1000]);
     sigCenterFreq(i) = sum(sp.*f')./sum(sp);
 end
+
+outSig = struct;
 
 % Signal A: Concentrating to the tip of index finger
 sigA = [];
@@ -177,7 +179,9 @@ else
 end
 
 %% Looping trials 
-isPlayed = 0;
+isPlayed = struct;
+isPlayed.Left = 0;
+isPlayed.Right = 0;
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB, 7 = wnC, 8 = wnD
@@ -219,7 +223,7 @@ pic_h = imshow([]);
 text_h = uicontrol('Style','text','BackgroundColor','w',...
     'Position',[740 700 300 50], 'String',[],'FontSize',24);
 text_h2 = uicontrol('Style','text','BackgroundColor','w',...
-    'Position',[20 660 400 30], 'String',[],'FontSize',18);
+    'Position',[80 660 400 30], 'String',[],'FontSize',18);
 
 uicontrol('Style','text','BackgroundColor','w',...
     'Position',[540 280 200 50], 'String','Signal A','FontSize',24);
@@ -273,7 +277,8 @@ expData = table('Size',[totalTrialNum columnNum],'VariableTypes',varTypes,...
 
 currInd = 0;
 for i = 1:totalTrialNum    
-    isPlayed = 0;
+    isPlayed.Left = 0;
+    isPlayed.Right = 0;
     currInd = i;
     
     text_h.String = sprintf('Trial %d',i);
@@ -372,11 +377,13 @@ function chooseLeft(hObject, ~)
     pause(0.01);
     global currChoice sNI isPlayed text_h2;
     if ~sNI.IsLogging
-        if isPlayed
+        if (isPlayed.Left)&&(isPlayed.Right)
             button_state = get(hObject,'Value');
             if button_state == get(hObject,'Max')
                 currChoice = 1; % Left button pushed
             end
+        elseif (isPlayed.Left)||(isPlayed.Right)
+            text_h2.String = 'You need to play both signals!'; pause(0.8);
         else
             text_h2.String = 'Play the signal first!'; pause(0.8);
         end
@@ -387,11 +394,13 @@ function chooseRight(hObject, ~)
     pause(0.01);
     global currChoice sNI isPlayed text_h2;
     if ~sNI.IsLogging
-        if isPlayed
+        if (isPlayed.Left)&&(isPlayed.Right)
             button_state = get(hObject,'Value');
             if button_state == get(hObject,'Max')
                 currChoice = 2; % Right button pushed
             end
+        elseif (isPlayed.Left)||(isPlayed.Right)
+            text_h2.String = 'You need to play both signals!'; pause(0.8);
         else
             text_h2.String = 'Play the signal first!'; pause(0.8);
         end
@@ -427,7 +436,7 @@ function playLeft(hObject, ~)
         end
         queueOutputData(sNI,outQueue');
         sNI.startForeground; 
-        isPlayed = 1;
+        isPlayed.Left = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
 end
@@ -461,7 +470,7 @@ function playRight(hObject, ~)
         end
         queueOutputData(sNI,outQueue');
         sNI.startForeground; 
-        isPlayed = 1;
+        isPlayed.Right = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
 end
