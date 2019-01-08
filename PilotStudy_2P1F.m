@@ -11,7 +11,7 @@ global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subj
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 5;
+TrialNum = 10;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -185,13 +185,19 @@ isPlayed.Right = 0;
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB, 7 = wnC, 8 = wnD
-sigPairOrder = [ones(TrialNum,1),2*ones(TrialNum,1);
-    ones(TrialNum,1),5*ones(TrialNum,1);
+% sigPairOrder = [ones(TrialNum,1),2*ones(TrialNum,1);
+%     ones(TrialNum,1),5*ones(TrialNum,1);
+%     ones(TrialNum,1),6*ones(TrialNum,1);
+%     2*ones(TrialNum,1),5*ones(TrialNum,1);
+%     2*ones(TrialNum,1),6*ones(TrialNum,1);
+%     5*ones(TrialNum,1),6*ones(TrialNum,1)
+%     ]; % Pair (1,2) (1,5) (1,6) (2,5) (2,6) (5,6)
+sigPairOrder = [ones(TrialNum,1),5*ones(TrialNum,1);
     ones(TrialNum,1),6*ones(TrialNum,1);
     2*ones(TrialNum,1),5*ones(TrialNum,1);
-    2*ones(TrialNum,1),6*ones(TrialNum,1);
-    5*ones(TrialNum,1),6*ones(TrialNum,1)
-    ]; % Pair (1,2) (1,5) (1,6) (2,5) (2,6) (5,6)
+    2*ones(TrialNum,1),6*ones(TrialNum,1)
+    ]; % Pair (1,5) (1,6) (2,5) (2,6)
+
 sigPairOrder = [sigPairOrder;sigPairOrder]; % Repeat twice (2 figures)
 totalTrialNum = size(sigPairOrder,1);
 sigPairRand = randi(2,totalTrialNum,1);
@@ -201,13 +207,31 @@ colInd2 = sub2ind([totalTrialNum,2], (1:totalTrialNum)', 3-sigPairRand); % Right
 
 sigPairOrder = [sigPairOrder(colInd1),sigPairOrder(colInd2)];
 
+% trialOrder = [sigPairOrder,...
+%     [ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1); 
+%     2*ones(TrialNum,1);2*ones(TrialNum,1);2*ones(TrialNum,1);
+%     2*ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1);
+%     2*ones(TrialNum,1);2*ones(TrialNum,1);1*ones(TrialNum,1)]]; % Last column contains index of displayed figure
 trialOrder = [sigPairOrder,...
-    [ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1); 
-    2*ones(TrialNum,1);2*ones(TrialNum,1);2*ones(TrialNum,1);
-    2*ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1);
-    2*ones(TrialNum,1);2*ones(TrialNum,1);1*ones(TrialNum,1)]]; % Last column contains index of displayed figure
+    [ones(TrialNum,1);ones(TrialNum,1); 
+    2*ones(TrialNum,1);2*ones(TrialNum,1);
+    ones(TrialNum,1);ones(TrialNum,1);
+    2*ones(TrialNum,1);2*ones(TrialNum,1)]];
 
 trialOrder = trialOrder(randperm(totalTrialNum),:);
+
+% Additional test ---------------------------------------------------------
+TrialNum2 = 2*TrialNum;
+sigPairOrder2 = [ones(TrialNum2,1),2*ones(TrialNum2,1)];
+sigPairRand2 = randi(2,TrialNum2,1);
+colInd1 = sub2ind([TrialNum2,2], (1:TrialNum2)', sigPairRand2); % Left column
+colInd2 = sub2ind([TrialNum2,2], (1:TrialNum2)', 3-sigPairRand2); % Right column
+sigPairOrder2 = [sigPairOrder2(colInd1),sigPairOrder2(colInd2)];
+trialOrder2 = [sigPairOrder2,[ones(TrialNum,1);2*ones(TrialNum,1)]];
+trialOrder2 = trialOrder2(randperm(TrialNum2),:);
+
+trialOrder = [trialOrder;trialOrder2];
+totalTrialNum = size(trialOrder,1);
 
 % GUI ---------------------------------------------------------------------
 imgChoice{1} = imread('figs/Concentrating.png'); % Figure A
