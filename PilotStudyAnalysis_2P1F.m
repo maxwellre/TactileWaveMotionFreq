@@ -50,21 +50,21 @@ fprintf('Accuracy of identifying sigB (from sigA - sigB pair) = %.0f %%\n',...
 100*sum(expData.SubmittedAnswer(ind2) == expData.DisplayType(ind2))/sum(ind2));
 
 % -------------------------------------------------------------------------
-disp('-------------------------------------------------------------------')
-disp('Pairs that contain reordered sequence only:')
-indCtrl = (pairType == 48);
-fprintf('Reordered sequence A identified as sigA = %.0f %%\n',...
-    100*sum((expData.SubmittedAnswer(indCtrl)==5)&...
-    (expData.DisplayType(indCtrl)==1))/sum(indCtrl));
-fprintf('Reordered sequence A identified as sigB = %.0f %%\n',...
-    100*sum((expData.SubmittedAnswer(indCtrl)==5)&...
-    (expData.DisplayType(indCtrl)==2))/sum(indCtrl));
-fprintf('Reordered sequence B identified as sigA = %.0f %%\n',...
-    100*sum((expData.SubmittedAnswer(indCtrl)==6)&...
-    (expData.DisplayType(indCtrl)==1))/sum(indCtrl));
-fprintf('Reordered sequence B identified as sigB = %.0f %%\n',...
-    100*sum((expData.SubmittedAnswer(indCtrl)==6)&...
-    (expData.DisplayType(indCtrl)==2))/sum(indCtrl));
+% disp('-------------------------------------------------------------------')
+% disp('Pairs that contain reordered sequence only:')
+% indCtrl = (pairType == 48);
+% fprintf('Reordered sequence A identified as sigA = %.0f %%\n',...
+%     100*sum((expData.SubmittedAnswer(indCtrl)==5)&...
+%     (expData.DisplayType(indCtrl)==1))/sum(indCtrl));
+% fprintf('Reordered sequence A identified as sigB = %.0f %%\n',...
+%     100*sum((expData.SubmittedAnswer(indCtrl)==5)&...
+%     (expData.DisplayType(indCtrl)==2))/sum(indCtrl));
+% fprintf('Reordered sequence B identified as sigA = %.0f %%\n',...
+%     100*sum((expData.SubmittedAnswer(indCtrl)==6)&...
+%     (expData.DisplayType(indCtrl)==1))/sum(indCtrl));
+% fprintf('Reordered sequence B identified as sigB = %.0f %%\n',...
+%     100*sum((expData.SubmittedAnswer(indCtrl)==6)&...
+%     (expData.DisplayType(indCtrl)==2))/sum(indCtrl));
 % -------------------------------------------------------------------------
 disp('-------------------------------------------------------------------')
 disp('Pairs that contain either sigA or sigB')
@@ -78,27 +78,27 @@ fprintf('Accuracy of identifying sigB = %.0f %%\n',...
 100*sum(expData.SubmittedAnswer(ind2) == expData.DisplayType(ind2))/sum(ind2));
 
 % -------------------------------------------------------------------------
-% Response time analysis
-figure('Position',[50,350,1800,500]);
-histEdges = linspace(min(expData.ResponseTime),max(expData.ResponseTime),...
-    50);
-
-for i = 1:3
-    subplot(1,3,i)
-    switch i
-        case 1
-            resTime = expData.ResponseTime(indExp);
-            titleStr = ('Pairs that contain both sigA and sigB');
-        case 2
-            resTime = expData.ResponseTime(indExp2);
-            titleStr = ('Pairs that contain either sigA or sigB');
-        case 3
-            resTime = expData.ResponseTime(indCtrl);
-            titleStr = ('Pairs that contain reordered sequence only');
-    end
-    histogram(resTime,histEdges,'EdgeColor','none');
-    xlabel('Response Time (secs)');
-    box off;
-    title(titleStr);
-end
+% % Response time analysis
+% figure('Position',[50,350,1800,500]);
+% histEdges = linspace(min(expData.ResponseTime),max(expData.ResponseTime),...
+%     50);
+% 
+% for i = 1:3
+%     subplot(1,3,i)
+%     switch i
+%         case 1
+%             resTime = expData.ResponseTime(indExp);
+%             titleStr = ('Pairs that contain both sigA and sigB');
+%         case 2
+%             resTime = expData.ResponseTime(indExp2);
+%             titleStr = ('Pairs that contain either sigA or sigB');
+%         case 3
+%             resTime = expData.ResponseTime(indCtrl);
+%             titleStr = ('Pairs that contain reordered sequence only');
+%     end
+%     histogram(resTime,histEdges,'EdgeColor','none');
+%     xlabel('Response Time (secs)');
+%     box off;
+%     title(titleStr);
+% end
 
