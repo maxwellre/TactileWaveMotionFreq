@@ -51,8 +51,8 @@ fprintf('Accuracy of identifying sigB (from sigA - sigB pair) = %.0f %%\n',...
 
 % -------------------------------------------------------------------------
 % disp('-------------------------------------------------------------------')
-% disp('Pairs that contain reordered sequence only:')
-% indCtrl = (pairType == 48);
+disp('Pairs that contain reordered sequence only:')
+indCtrl = (pairType == 48);
 % fprintf('Reordered sequence A identified as sigA = %.0f %%\n',...
 %     100*sum((expData.SubmittedAnswer(indCtrl)==5)&...
 %     (expData.DisplayType(indCtrl)==1))/sum(indCtrl));
