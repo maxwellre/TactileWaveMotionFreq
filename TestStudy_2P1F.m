@@ -11,7 +11,7 @@ global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subj
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 10;
+TrialNum = 1;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -142,41 +142,41 @@ addAnalogOutputChannel(sNI,'Dev3','ao0','Voltage');
 sNI.Rate = Fs;
 
 %% Initialize the GUI -----------------------------------------------------
-fig_h = figure('Name','Experiment Starting...','Position',figSize,...
-    'Color','w');
-img0 = imread('figs/HandPose-01.jpg');
-subplot('Position',[0.05 0.05 0.4 0.9]);
-imshow(img0);
-fileID = fopen('InstructionToSubject_2P1F.txt','r');
-noteStr = fscanf(fileID,'%c'); fclose(fileID);
-annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
-    'EdgeColor','none', 'FontSize',18);
-
-% Set the staring flag
-isStarting = 1;
-
-% Input subject info
-uicontrol('Style','text','BackgroundColor','w',...
-    'Position',[1020 140 200 30], 'FontSize',18, 'String',...
-    'Enter subject ID');
-etf = uicontrol('Style','edit', 'Position',[1020 100 200 30],...
-    'BackgroundColor',[0.98,0.98,0.98], 'FontSize',18);
-
-% Start button
-uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
-    'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
-    'Callback', {@startExp, etf});
-
-while isStarting && isvalid(fig_h) 
-    pause(0.5);
-end
-
-if isvalid(fig_h) 
-    close(fig_h);
-else
-    disp('---------- Program forced shutdown ----------')
-    return
-end
+% fig_h = figure('Name','Experiment Starting...','Position',figSize,...
+%     'Color','w');
+% img0 = imread('figs/HandPose-01.jpg');
+% subplot('Position',[0.05 0.05 0.4 0.9]);
+% imshow(img0);
+% fileID = fopen('InstructionToSubject_2P1F.txt','r');
+% noteStr = fscanf(fileID,'%c'); fclose(fileID);
+% annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
+%     'EdgeColor','none', 'FontSize',18);
+% 
+% % Set the staring flag
+% isStarting = 1;
+% 
+% % Input subject info
+% uicontrol('Style','text','BackgroundColor','w',...
+%     'Position',[1020 140 200 30], 'FontSize',18, 'String',...
+%     'Enter subject ID');
+% etf = uicontrol('Style','edit', 'Position',[1020 100 200 30],...
+%     'BackgroundColor',[0.98,0.98,0.98], 'FontSize',18);
+% 
+% % Start button
+% uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
+%     'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
+%     'Callback', {@startExp, etf});
+% 
+% while isStarting && isvalid(fig_h) 
+%     pause(0.5);
+% end
+% 
+% if isvalid(fig_h) 
+%     close(fig_h);
+% else
+%     disp('---------- Program forced shutdown ----------')
+%     return
+% end
 
 %% Looping trials 
 isPlayed = struct;
@@ -192,11 +192,7 @@ isPlayed.Right = 0;
 %     2*ones(TrialNum,1),6*ones(TrialNum,1);
 %     5*ones(TrialNum,1),6*ones(TrialNum,1)
 %     ]; % Pair (1,2) (1,5) (1,6) (2,5) (2,6) (5,6)
-sigPairOrder = [ones(TrialNum,1),5*ones(TrialNum,1);
-    ones(TrialNum,1),6*ones(TrialNum,1);
-    2*ones(TrialNum,1),5*ones(TrialNum,1);
-    2*ones(TrialNum,1),6*ones(TrialNum,1)
-    ]; % Pair (1,5) (1,6) (2,5) (2,6)
+sigPairOrder = [ones(TrialNum,1),2*ones(TrialNum,1)];
 
 sigPairOrder = [sigPairOrder;sigPairOrder]; % Repeat twice (2 figures)
 totalTrialNum = size(sigPairOrder,1);
@@ -213,10 +209,7 @@ sigPairOrder = [sigPairOrder(colInd1),sigPairOrder(colInd2)];
 %     2*ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1);
 %     2*ones(TrialNum,1);2*ones(TrialNum,1);1*ones(TrialNum,1)]]; % Last column contains index of displayed figure
 trialOrder = [sigPairOrder,...
-    [ones(TrialNum,1);ones(TrialNum,1); 
-    2*ones(TrialNum,1);2*ones(TrialNum,1);
-    ones(TrialNum,1);ones(TrialNum,1);
-    2*ones(TrialNum,1);2*ones(TrialNum,1)]];
+    [ones(TrialNum,1);ones(TrialNum,1);]];
 
 trialOrder = trialOrder(randperm(totalTrialNum),:);
 
@@ -311,7 +304,7 @@ for i = 1:totalTrialNum
     expData.StimulusTypeRight(i) = trialOrder(i,2);
     
     expData.DisplayType(i) = trialOrder(i,3);    
-    pic_h.CData = imgChoice{expData.DisplayType(i)};    
+%     pic_h.CData = imgChoice{expData.DisplayType(i)};    
   
     while sNI.IsLogging && isvalid(fig_h)      
         bt_right.BackgroundColor = [1,1,1];
