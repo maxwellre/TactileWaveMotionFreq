@@ -11,7 +11,7 @@ global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subj
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 2;
+TrialNum = 10;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
