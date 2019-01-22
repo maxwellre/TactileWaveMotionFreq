@@ -22,7 +22,7 @@ pairType = [17,33,18,34];
 pairTypeLabels = {'sigA - rsA','sigA - rsB','sigB - rsA','sigB - rsB'};
 pairType_num = length(pairType);
 
-AllData = cell(sbj_num,5);
+AllData = cell(sbj_num,6);
 CFRate = NaN(sbj_num,pairType_num);
 
 for i = 1:sbj_num
@@ -66,6 +66,8 @@ for i = 1:sbj_num
     
     % Response time analysis
     AllData{i,5} = expData.ResponseTime;
+    
+    AllData{i,6} = [pairAA_ind,pairAB_ind,pairBA_ind,pairBB_ind];
 end
 
 %% Boxplot of all results
@@ -106,48 +108,73 @@ end
 % ylim([0.5 17.5])
 
 %% Random walk model
-distinctColor = distinguishable_colors(15);
-figure('Position',[50,50,1860,800],'Color','w');
-subplot(1,2,1);
-hold on
-for i = 1:sbj_num
-    plot(0:80,[0; cumsum(AllData{i,4}(1:80))],'Color',distinctColor(i,:),...
-        'LineWidth',2);   
-end
-yRange = ylim();
-% plot([80 80],yRange,'k--');
-plot([0 80],[0 0],'k--');
-legend(sprintfc('Sbj%d',1:sbj_num),'location','northeast','box','off');
-box off;
-xlim([0 99])
-xlabel('Trial #');
-ylabel('Accumulated score');
-title('If successfully identify the target signal +1, otherwise -1');
-set(gca,'FontSize',16);
-
-%% Response time
-respTime = [];
-for i = 1:sbj_num
-    respTime = [respTime,AllData{i,5}(1:80)];
-end
-
+% dispTrialNum = 80;
+% 
 % distinctColor = distinguishable_colors(15);
-% figure('Position',[50,50,800,800],'Color','w');
-subplot(1,2,2);
-boxplot(respTime); box off;
-xlabel('Trial #');
-
+% figure('Position',[50,50,1860,800],'Color','w');
+% subplot(1,2,1);
 % hold on
 % for i = 1:sbj_num
-%     plot(AllData{i,5}(1:80),'Color',distinctColor(i,:));   
+%     plot(0:dispTrialNum,[0; cumsum(AllData{i,4}(1:dispTrialNum))],...
+%         'Color',distinctColor(i,:),'LineWidth',2);   
 % end
+% yRange = ylim();
+% % plot([80 80],yRange,'k--');
+% plot([0 80],[0 0],'k--');
 % legend(sprintfc('Sbj%d',1:sbj_num),'location','northeast','box','off');
 % box off;
-% xlim([0 99])
+% xlim([0 dispTrialNum+19])
 % xlabel('Trial #');
-ylim([0 60])
-ylabel('Response Time (secs)');
-set(gca,'FontSize',16);
+% ylabel('Accumulated score');
+% title('If successfully identify the target signal +1, otherwise -1');
+% set(gca,'FontSize',16);
+
+% %% Response time
+% respTime = [];
+% for i = 1:sbj_num
+%     respTime = [respTime,AllData{i,5}(1:80)];
+% end
+% 
+% % distinctColor = distinguishable_colors(15);
+% % figure('Position',[50,50,800,800],'Color','w');
+% subplot(1,2,2);
+% boxplot(respTime); box off;
+% xlabel('Trial #');
+% 
+% % hold on
+% % for i = 1:sbj_num
+% %     plot(AllData{i,5}(1:80),'Color',distinctColor(i,:));   
+% % end
+% % legend(sprintfc('Sbj%d',1:sbj_num),'location','northeast','box','off');
+% % box off;
+% % xlim([0 99])
+% % xlabel('Trial #');
+% ylim([0 60])
+% ylabel('Response Time (secs)');
+% set(gca,'FontSize',16);
+
+%% Random walk per pair group
+dispTrialNum = 20;
+
+distinctColor = distinguishable_colors(15);
+figure('Position',[50,50,1860,800],'Color','w');
+for pair_i = 1:4
+subplot(2,2,pair_i);
+hold on
+for i = 11%1:sbj_num
+    plot(0:dispTrialNum,(0.05*i)+[0; cumsum(AllData{i,4}(AllData{i,6}(:,pair_i)))],...
+        'Color',distinctColor(i,:),'LineWidth',0.75);   
+end
+plot([0 dispTrialNum],[0 0],'k--');
+box off;
+xlim([0 dispTrialNum+9])
+xlabel('Trial #');
+ylabel('Accumulated score');
+title(pairTypeLabels{pair_i});
+legend(sprintfc('Sbj%d',1:sbj_num),'location','northeast','box','off');
+set(gca,'FontSize',8);
+end
+
 
 %% ------------------------------------------------------------------------
 % % Response time analysis
