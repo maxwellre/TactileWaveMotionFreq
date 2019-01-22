@@ -119,42 +119,42 @@ sNI = daq.createSession('ni');
 addAnalogOutputChannel(sNI,'Dev3','ao0','Voltage');
 sNI.Rate = Fs;
 
-% %% Initialize the GUI -----------------------------------------------------
-% fig_h = figure('Name','Experiment Starting...','Position',figSize,...
-%     'Color','w');
-% img0 = imread('figs/HandPose-01.jpg');
-% subplot('Position',[0.05 0.05 0.4 0.9]);
-% imshow(img0);
-% fileID = fopen('InstructionToSubject_2P1F.txt','r');
-% noteStr = fscanf(fileID,'%c'); fclose(fileID);
-% annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
-%     'EdgeColor','none', 'FontSize',18);
-% 
-% % Set the staring flag
-% isStarting = 1;
-% 
-% % Input subject info
-% uicontrol('Style','text','BackgroundColor','w',...
-%     'Position',[1020 140 200 30], 'FontSize',18, 'String',...
-%     'Enter subject ID');
-% etf = uicontrol('Style','edit', 'Position',[1020 100 200 30],...
-%     'BackgroundColor',[0.98,0.98,0.98], 'FontSize',18);
-% 
-% % Start button
-% uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
-%     'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
-%     'Callback', {@startExp, etf});
-% 
-% while isStarting && isvalid(fig_h) 
-%     pause(0.5);
-% end
-% 
-% if isvalid(fig_h) 
-%     close(fig_h);
-% else
-%     disp('---------- Program forced shutdown ----------')
-%     return
-% end
+%% Initialize the GUI -----------------------------------------------------
+fig_h = figure('Name','Experiment Starting...','Position',figSize,...
+    'Color','w');
+img0 = imread('figs/HandPose-01.jpg');
+subplot('Position',[0.05 0.05 0.4 0.9]);
+imshow(img0);
+fileID = fopen('InstructionToSubject_2P1F.txt','r');
+noteStr = fscanf(fileID,'%c'); fclose(fileID);
+annotation('textbox',[0.46 0.05 0.5 0.9], 'String',noteStr,...
+    'EdgeColor','none', 'FontSize',18);
+
+% Set the staring flag
+isStarting = 1;
+
+% Input subject info
+uicontrol('Style','text','BackgroundColor','w',...
+    'Position',[1020 140 200 30], 'FontSize',18, 'String',...
+    'Enter subject ID');
+etf = uicontrol('Style','edit', 'Position',[1020 100 200 30],...
+    'BackgroundColor',[0.98,0.98,0.98], 'FontSize',18);
+
+% Start button
+uicontrol('Style', 'pushbutton', 'String', 'START', 'FontSize',20,...
+    'Position', [700 100 200 80], 'BackgroundColor',[0.95,0.95,0.95],...
+    'Callback', {@startExp, etf});
+
+while isStarting && isvalid(fig_h) 
+    pause(0.5);
+end
+
+if isvalid(fig_h) 
+    close(fig_h);
+else
+    disp('---------- Program forced shutdown ----------')
+    return
+end
 
 %% Looping trials 
 isPlayed = struct;
