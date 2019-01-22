@@ -1,6 +1,6 @@
 %% Test Frequency Based Motion Effect with Single Actuator
-% 2P1F (Two Play One Figure)
-% Created on 01/03/2018 based on 'PilotStudy_1P2F.m'
+% 2P1Anim (Two Play One Animation)
+% Created on 01/21/2018 based on 'PilotStudy_2P1F.m'
 % -------------------------------------------------------------------------
 close all
 clearvars
@@ -88,40 +88,18 @@ outSig = struct;
 
 % Signal A: Concentrating to the tip of index finger
 sigA = [];
-wnA = [];
-for i = 1:numSigs  
-    temp = randn(size(sigSeg{i,1}));    
-    temp = (rms(sigSeg{i,1})/rms(temp)).*temp;
 
-    wnA = [wnA, temp, zeroSig];
-    
+for i = 1:numSigs     
     sigA = [sigA, sigSeg{i,1}, zeroSig];
-%     sigA = noiseAmp * randn(size(sigA)) + sigA;
 end
 outSig.sigA = [pauseSig, sigA, pauseSig];
 
-wnA = [pauseSig, wnA, pauseSig];
-
-wnA = highpass(wnA,hpFreq,Fs); % High-pass filtering
-wnA = 2*lowpass(wnA,lpFreq,Fs,'Steepness',0.5); % Low-pass filtering
-
 % Signal B: Spreading to the whole hand.
 sigB = [];
-wnB = [];
-for i = 1:numSigs  
-    temp = randn(size(sigSeg{numSigs-i+1,1}));    
-    temp = (rms(sigSeg{numSigs-i+1,1})/rms(temp)).*temp;
-    
-    wnB = [wnB, temp, zeroSig];
-    
+for i = 1:numSigs     
     sigB = [sigB, sigSeg{numSigs-i+1,1}, zeroSig];
 end
 outSig.sigB = [pauseSig, sigB, pauseSig];
-
-wnB = [pauseSig, wnB, pauseSig];
-
-wnB = highpass(wnB,hpFreq,Fs); % High-pass filtering
-wnB = 2*lowpass(wnB,lpFreq,Fs,'Steepness',0.5); % Low-pass filtering
 
 % Signal reordered sequence
 rs_ind = [5, 8, 2, 9, 4, 6, 3, 10, 1, 7];
@@ -185,13 +163,6 @@ isPlayed.Right = 0;
 
 % Randomization -----------------------------------------------------------
 % 1 = SigA, 2 = SigB, 3 = wnA, 4 = wnB, 5 = rsA, 6 = rsB, 7 = wnC, 8 = wnD
-% sigPairOrder = [ones(TrialNum,1),2*ones(TrialNum,1);
-%     ones(TrialNum,1),5*ones(TrialNum,1);
-%     ones(TrialNum,1),6*ones(TrialNum,1);
-%     2*ones(TrialNum,1),5*ones(TrialNum,1);
-%     2*ones(TrialNum,1),6*ones(TrialNum,1);
-%     5*ones(TrialNum,1),6*ones(TrialNum,1)
-%     ]; % Pair (1,2) (1,5) (1,6) (2,5) (2,6) (5,6)
 sigPairOrder = [ones(TrialNum,1),5*ones(TrialNum,1);
     ones(TrialNum,1),6*ones(TrialNum,1);
     2*ones(TrialNum,1),5*ones(TrialNum,1);
@@ -207,11 +178,6 @@ colInd2 = sub2ind([totalTrialNum,2], (1:totalTrialNum)', 3-sigPairRand); % Right
 
 sigPairOrder = [sigPairOrder(colInd1),sigPairOrder(colInd2)];
 
-% trialOrder = [sigPairOrder,...
-%     [ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1); 
-%     2*ones(TrialNum,1);2*ones(TrialNum,1);2*ones(TrialNum,1);
-%     2*ones(TrialNum,1);ones(TrialNum,1);ones(TrialNum,1);
-%     2*ones(TrialNum,1);2*ones(TrialNum,1);1*ones(TrialNum,1)]]; % Last column contains index of displayed figure
 trialOrder = [sigPairOrder,...
     [ones(TrialNum,1);ones(TrialNum,1); 
     2*ones(TrialNum,1);2*ones(TrialNum,1);
@@ -234,8 +200,16 @@ trialOrder = [trialOrder;trialOrder2];
 totalTrialNum = size(trialOrder,1);
 
 % GUI ---------------------------------------------------------------------
-imgChoice{1} = imread('figs/Concentrating.png'); % Figure A
-imgChoice{2} = imread('figs/Spreading.png'); % Figure B
+% imgChoice{1} = imread('figs/Concentrating.png'); % Figure A
+% imgChoice{2} = imread('figs/Spreading.png'); % Figure B
+
+animFrame = cell(7,1);
+animFrame{1} = imread('figs/Direction0-01.jpg');
+for i = 1:5
+    animFrameName = sprintf('figs/Direction%d-01.jpg',i);
+    animFrame{i+1} = imread(animFrameName);
+end
+animFrame{7} = imread('figs/Direction0-01.jpg');
 
 fig_h = figure('Name','Experiment Running...','Position',figSize,...
     'Color','w');
@@ -300,6 +274,7 @@ expData = table('Size',[totalTrialNum columnNum],'VariableTypes',varTypes,...
     'VariableNames',varNames);
 
 currInd = 0;
+frameCount = 1;
 for i = 1:totalTrialNum    
     isPlayed.Left = 0;
     isPlayed.Right = 0;
@@ -310,13 +285,26 @@ for i = 1:totalTrialNum
     expData.StimulusTypeLeft(i) = trialOrder(i,1);
     expData.StimulusTypeRight(i) = trialOrder(i,2);
     
-    expData.DisplayType(i) = trialOrder(i,3);    
-    pic_h.CData = imgChoice{expData.DisplayType(i)};    
+    expData.DisplayType(i) = trialOrder(i,3);   
+    
+    if expData.DisplayType(i) == 2
+        anim_ind = 1:7; % Spreading animation
+    elseif expData.DisplayType(i) == 1
+        anim_ind = 7:-1:1; % Concentrating animation
+    else
+        error('Wrong Display Type Detected!')
+    end
   
     while sNI.IsLogging && isvalid(fig_h)      
         bt_right.BackgroundColor = [1,1,1];
         bt_left.BackgroundColor = [1,1,1];
         bt_submit.BackgroundColor = [1,1,1];
+        
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
+        frameCount = frameCount +1;
+        if (frameCount == 8)
+            frameCount = 1;
+        end
         pause(0.1);
     end
     tic
@@ -354,6 +342,12 @@ for i = 1:totalTrialNum
             if currChoice > 0
                 bt_submit.BackgroundColor = [1,0,0];
             end
+        end
+        
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
+        frameCount = frameCount +1;
+        if (frameCount == 8)
+            frameCount = 1;
         end
         pause(0.1);
     end  
@@ -459,12 +453,7 @@ function playLeft(hObject, ~)
                 error('Unidentified Trial Index')          
         end
         queueOutputData(sNI,outQueue');
-%         sNI.startForeground; 
-        sNI.startBackground;
-        while sNI.IsLogging
-            pause(0.2);
-        end
-        
+        sNI.startForeground; 
         isPlayed.Left = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
@@ -498,11 +487,7 @@ function playRight(hObject, ~)
                 error('Unidentified Trial Index')          
         end
         queueOutputData(sNI,outQueue');
-%         sNI.startForeground; 
-        sNI.startBackground;
-        while sNI.IsLogging
-            pause(0.2);
-        end
+        sNI.startForeground; 
         isPlayed.Right = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
