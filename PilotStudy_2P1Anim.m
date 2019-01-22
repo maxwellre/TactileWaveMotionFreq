@@ -11,7 +11,7 @@ global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subj
 % Experiment Configuration 
 figSize = [20,100,1880,800];
 
-TrialNum = 10;
+TrialNum = 2;
 
 % -------------------------------------------------------------------------
 Fs = 20000; % 20 kS/sec sampling frequency
@@ -206,7 +206,8 @@ totalTrialNum = size(trialOrder,1);
 animFrame = cell(7,1);
 animFrame{1} = imread('figs/Direction0-01.jpg');
 for i = 1:5
-    animFrameName = sprintf('figs/Direction%d-01.jpg',i);
+%     animFrameName = sprintf('figs/Direction%d-01.jpg',i);
+    animFrameName = sprintf('figs/EnSphere%d-01.jpg',i);
     animFrame{i+1} = imread(animFrameName);
 end
 animFrame{7} = imread('figs/Direction0-01.jpg');
