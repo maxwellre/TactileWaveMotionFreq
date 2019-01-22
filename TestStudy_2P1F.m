@@ -461,9 +461,6 @@ function playLeft(hObject, ~)
         queueOutputData(sNI,outQueue');
 %         sNI.startForeground; 
         sNI.startBackground;
-        while sNI.IsLogging
-            pause(0.2);
-        end
         
         isPlayed.Left = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
@@ -498,11 +495,7 @@ function playRight(hObject, ~)
                 error('Unidentified Trial Index')          
         end
         queueOutputData(sNI,outQueue');
-%         sNI.startForeground; 
-        sNI.startBackground;
-        while sNI.IsLogging
-            pause(0.2);
-        end
+        sNI.startForeground; 
         isPlayed.Right = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end

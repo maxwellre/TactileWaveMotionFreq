@@ -6,7 +6,7 @@ close all
 clearvars
 % -------------------------------------------------------------------------
 % Global variable
-global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subjectID currInd
+global isStarting isChoosing isPlayed currChoice outSig sNI text_h2 expData subjectID currInd frameCount pic_h animFrame anim_ind
 % -------------------------------------------------------------------------
 % Experiment Configuration 
 figSize = [20,100,1880,800];
@@ -299,12 +299,7 @@ for i = 1:totalTrialNum
         bt_right.BackgroundColor = [1,1,1];
         bt_left.BackgroundColor = [1,1,1];
         bt_submit.BackgroundColor = [1,1,1];
-        
-        pic_h.CData = animFrame{anim_ind(frameCount)}; 
-        frameCount = frameCount +1;
-        if (frameCount == 8)
-            frameCount = 1;
-        end
+
         pause(0.1);
     end
     tic
@@ -343,12 +338,7 @@ for i = 1:totalTrialNum
                 bt_submit.BackgroundColor = [1,0,0];
             end
         end
-        
-        pic_h.CData = animFrame{anim_ind(frameCount)}; 
-        frameCount = frameCount +1;
-        if (frameCount == 8)
-            frameCount = 1;
-        end
+
         pause(0.1);
     end  
     
@@ -427,7 +417,7 @@ end
 
 function playLeft(hObject, ~)
     pause(0.01);
-    global outSig sNI text_h2 isPlayed expData currInd;
+    global outSig sNI text_h2 isPlayed expData currInd frameCount pic_h animFrame anim_ind;
     if ~sNI.IsLogging
         text_h2.String = 'Playing the signal ...';
         hObject.BackgroundColor = [0.5,1,0.4];
@@ -453,7 +443,20 @@ function playLeft(hObject, ~)
                 error('Unidentified Trial Index')          
         end
         queueOutputData(sNI,outQueue');
-        sNI.startForeground; 
+%         sNI.startForeground; 
+        frameCount = 1;
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
+        sNI.startBackground;
+        while sNI.IsLogging
+            pic_h.CData = animFrame{anim_ind(frameCount)}; 
+            frameCount = frameCount +1;
+            if (frameCount == 8)
+                frameCount = 1;
+            end
+            pause(0.3);
+        end
+        frameCount = 1;
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
         isPlayed.Left = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
@@ -461,7 +464,7 @@ end
 
 function playRight(hObject, ~)
     pause(0.01);
-    global outSig sNI text_h2 isPlayed expData currInd;
+    global outSig sNI text_h2 isPlayed expData currInd frameCount pic_h animFrame anim_ind;
     if ~sNI.IsLogging
         text_h2.String = 'Playing the signal ...';
         hObject.BackgroundColor = [0.5,1,0.4];
@@ -487,7 +490,20 @@ function playRight(hObject, ~)
                 error('Unidentified Trial Index')          
         end
         queueOutputData(sNI,outQueue');
-        sNI.startForeground; 
+%         sNI.startForeground; 
+        sNI.startBackground;
+        frameCount = 1;
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
+        while sNI.IsLogging
+            pic_h.CData = animFrame{anim_ind(frameCount)}; 
+            frameCount = frameCount +1;
+            if (frameCount == 8)
+                frameCount = 1;
+            end
+            pause(0.3);
+        end
+        frameCount = 1;
+        pic_h.CData = animFrame{anim_ind(frameCount)}; 
         isPlayed.Right = 1;
         hObject.BackgroundColor = [0.95,0.98,0.95];
     end
