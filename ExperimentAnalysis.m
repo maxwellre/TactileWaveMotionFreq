@@ -8,6 +8,28 @@
 % 6 = rsB (Random Sequence with both ends same as sigB)
 StimulusLabel = {'Concentrating (A)','Spreading (B)',...
     'Reordered Sequence (A)','Reordered Sequence (B)'};
+
+distinctColor = [
+         0         0    1.0000
+    1.0000         0         0
+         0    1.0000         0
+         0         0    0.1724
+    1.0000    0.1034    0.7241
+    1.0000    0.8276         0
+         0    0.3448         0
+    0.5172    0.5172    1.0000
+    0.6207    0.3103    0.2759
+         0    1.0000    0.7586
+         0    0.5172    0.5862
+         0         0    0.4828
+    0.5862    0.8276    0.3103
+    0.9655    0.6207    0.8621
+    0.8276    0.0690    1.0000
+    0.4828    0.1034    0.4138
+    0.9655    0.0690    0.3793
+    1.0000    0.7586    0.5172
+    0.1379    0.1379    0.0345
+    0.5517    0.6552    0.4828];
 % -------------------------------------------------------------------------
 % Pair Type ID:
 % 17: sigA - rsA
@@ -71,53 +93,54 @@ for i = 1:sbj_num
 end
 
 %% Boxplot of all results
-figure('Position',[50,50,800,800],'Color','w');
-boxplot(CFRate,'Colors','rbrb'); box off; 
+figure('Position',[150,150,700,680],'Color','w');
+% boxplot(CFRate,'Colors','kkkk'); box off; 
+boxplot(CFRate); box off; 
 ylabel('Rate matching target signal to figure (%)');
 xticklabels(pairTypeLabels);
 xlabel('Target signal - control signal');
-set(gca,'FontSize',16);
-ylim([0 100])
+set(gca,'FontSize',20,'LineWidth',0.75);
+ylim([0 105])
+
 %% Analysis of performance of individual subject
-meanScore = mean(CFRate,2);
-[reorder_meanScore,sbj_reorder_ind] = sort(meanScore,'descend');
-% CFRate = CFRate(sbj_reorder_ind,:);
-
-figure('Position',[50,50,1800,800],'Color','w');
-subplot(1,2,1)
-barh(CFRate(:,1),'EdgeColor','None'); box off;
-hold on
-barh(-CFRate(:,2),'EdgeColor','None'); box off;
-hold off
-legend(pairTypeLabels(1:2));
-xticklabels(abs(xticks))
-xlabel('Rate of identifying sigA as concentrating (%)')
-ylabel('Subject #')
-set(gca,'FontSize',16);
-ylim([0.5 17.5])
-
-subplot(1,2,2)
-barh(CFRate(:,3),'EdgeColor','None'); box off;
-hold on
-barh(-CFRate(:,4),'EdgeColor','None'); box off;
-hold off
-legend(pairTypeLabels(3:4));
-xticklabels(abs(xticks))
-xlabel('Rate of identifying sigB as spreading (%)')
-ylabel('Subject #')
-set(gca,'FontSize',16);
-ylim([0.5 17.5])
+% meanScore = mean(CFRate,2);
+% [reorder_meanScore,sbj_reorder_ind] = sort(meanScore,'descend');
+% % CFRate = CFRate(sbj_reorder_ind,:);
+% 
+% figure('Position',[50,50,1800,800],'Color','w');
+% subplot(1,2,1)
+% barh(CFRate(:,1),'EdgeColor','None'); box off;
+% hold on
+% barh(-CFRate(:,2),'EdgeColor','None'); box off;
+% hold off
+% legend(pairTypeLabels(1:2));
+% xticklabels(abs(xticks))
+% xlabel('Rate of identifying sigA as concentrating (%)')
+% ylabel('Subject #')
+% set(gca,'FontSize',16);
+% ylim([0.5 17.5])
+% 
+% subplot(1,2,2)
+% barh(CFRate(:,3),'EdgeColor','None'); box off;
+% hold on
+% barh(-CFRate(:,4),'EdgeColor','None'); box off;
+% hold off
+% legend(pairTypeLabels(3:4));
+% xticklabels(abs(xticks))
+% xlabel('Rate of identifying sigB as spreading (%)')
+% ylabel('Subject #')
+% set(gca,'FontSize',16);
+% ylim([0.5 17.5])
 
 %% Random walk model
 dispTrialNum = 80;
 
-% distinctColor = distinguishable_colors(15);
 figure('Position',[50,50,1860,800],'Color','w');
 subplot(1,2,1);
 hold on
 for i = 1:sbj_num
     plot(0:dispTrialNum,[0; cumsum(AllData{i,4}(1:dispTrialNum))],...
-        'LineWidth',2);   %'Color',distinctColor(i,:)
+        'Color',distinctColor(i,:),'LineWidth',2);  
 end
 yRange = ylim();
 % plot([80 80],yRange,'k--');
@@ -130,14 +153,12 @@ ylabel('Accumulated score');
 title('If successfully identify the target signal +1, otherwise -1');
 set(gca,'FontSize',16);
 
-%% Response time
+% Response time
 respTime = [];
 for i = 1:sbj_num
     respTime = [respTime,AllData{i,5}(1:80)];
 end
 
-% distinctColor = distinguishable_colors(15);
-% figure('Position',[50,50,800,800],'Color','w');
 subplot(1,2,2);
 boxplot(respTime); box off;
 xlabel('Trial #');
@@ -155,6 +176,8 @@ ylabel('Response Time (secs)');
 set(gca,'FontSize',16);
 
 %% Random walk per pair group
+if 0
+
 dispTrialNum = 20;
 
 %distinctColor = distinguishable_colors(15);
@@ -164,7 +187,7 @@ subplot(2,2,pair_i);
 hold on
 for i = 1:sbj_num
     plot(0:dispTrialNum,(0.05*i)+[0; cumsum(AllData{i,4}(AllData{i,6}(:,pair_i)))],...
-        'LineWidth',0.75);   %'Color',distinctColor(i,:)
+        'Color',distinctColor(i,:), 'LineWidth',0.75);   
 end
 plot([0 dispTrialNum],[0 0],'k--');
 box off;
@@ -176,7 +199,7 @@ legend(sprintfc('Sbj%d',1:sbj_num),'location','northeast','box','off');
 set(gca,'FontSize',8);
 end
 
-
+end
 %% ------------------------------------------------------------------------
 % % Response time analysis
 % figure('Position',[50,350,1800,500]);
