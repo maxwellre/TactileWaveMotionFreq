@@ -73,6 +73,18 @@ for i = 1:sbj_num
     pairBA_ind = dispType2_ind & (AllData{i,3} == pairType(3));
     pairBB_ind = dispType2_ind & (AllData{i,3} == pairType(4));
     
+    temp_ind = find(pairAA_ind == 1);
+    pairAA_ind(temp_ind(1:4)) = 0;
+    
+    temp_ind = find(pairAB_ind == 1);
+    pairAB_ind(temp_ind(1:4)) = 0;
+    
+    temp_ind = find(pairBA_ind == 1);
+    pairBA_ind(temp_ind(1:4)) = 0;
+    
+    temp_ind = find(pairBB_ind == 1);
+    pairBB_ind(temp_ind(1:4)) = 0;
+    
     CFRate(i,1) = 100*sum(expData.SubmittedAnswer(pairAA_ind) ==...
         expData.DisplayType(pairAA_ind))/sum(pairAA_ind);
     CFRate(i,2) = 100*sum(expData.SubmittedAnswer(pairAB_ind) ==...
